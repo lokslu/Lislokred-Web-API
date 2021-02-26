@@ -17,13 +17,12 @@ namespace Lislokred_Web_API.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly MovieRepository movieRepository;
-        //private readonly IOptions<AuthOption> AuthOption;
+    
 
-        public MoviesController(ApplicationContext context/*, IOptions<AuthOption> authOptions*/)
+        public MoviesController(ApplicationContext context)
         {
             movieRepository = new MovieRepository(context);
 
-            //this.AuthOption = authOptions;
         }
 
         [HttpPost("AddMovie")]

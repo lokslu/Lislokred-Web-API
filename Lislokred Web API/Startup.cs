@@ -1,5 +1,6 @@
 using Lislokred_Web_API.Models.Entitys;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -41,6 +42,7 @@ namespace Lislokred_Web_API
 
             var authOptional = Configuration.GetSection("Auth").Get<AuthOption>();
                 
+            services.AddControllers();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                    .AddJwtBearer(options =>
                    {
@@ -65,8 +67,14 @@ namespace Lislokred_Web_API
                            ValidateIssuerSigningKey = true,
                        };
                    });
-            services.AddControllers();
 
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    //.RequireClaim(User.Claims.FirstOrDefault(c => c.Type == "Id").Value)
+                    .Build();
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Lislokred_Web_API", Version = "v1" });
@@ -87,15 +95,29 @@ namespace Lislokred_Web_API
 
             app.UseRouting();
 
-
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
              Path.Combine(env.ContentRootPath, "Pictures")),
                 RequestPath = "/Pictures"
             });
+            //зачатки диплома а именно фишки с приватными медия
+            //app.UseStaticFiles(new StaticFileOptions
+            //{
+            //    FileProvider = new PhysicalFileProvider(
+            // Path.Combine(env.ContentRootPath, "Pictures/Movies")),
+            //    RequestPath = "/Movies"
+            //});
             app.UseAuthentication();
             app.UseAuthorization();
+
+            //зачатки 2
+            //  app.UseStaticFiles(new StaticFileOptions
+            //  {
+            //      FileProvider = new PhysicalFileProvider(
+            //Path.Combine(env.ContentRootPath, "Pictures/Users")),
+            //      RequestPath = "/Users"
+            //  });
 
             app.UseEndpoints(endpoints =>
             {

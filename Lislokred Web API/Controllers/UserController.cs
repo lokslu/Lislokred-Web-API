@@ -90,11 +90,6 @@ namespace Lislokred_Web_API.Controllers
             
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            var response = new
-            {
-                access_token = encodedJwt,
-             //   username = identity.Claims.FirstOrDefault(x => x.Type == "Id").Value
-            };
 
             // сериализация ответа
             Response.ContentType = "application/json";
