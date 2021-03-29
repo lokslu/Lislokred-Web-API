@@ -7,11 +7,13 @@ using System.Linq;
 using AutoMapper;
 using System.Threading.Tasks;
 using Lislokred_Web_API.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Lislokred_Web_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class GenreController : ControllerBase
     {
         private readonly GenreRepository genreRepository;
@@ -27,6 +29,12 @@ namespace Lislokred_Web_API.Controllers
             var mapper = new Mapper(config);
             return mapper.Map<IEnumerable<Genre>, IEnumerable<GenreModel>>(genreRepository.Get());
              
+        }
+        [HttpGet("{MovieId}")]
+        public IActionResult GetGanreByMovieId(string MovieId)
+        {
+            var result =genreRepository.GetByMovieId(Guid.Parse(MovieId));
+            return Ok(result);
         }
     }
 }

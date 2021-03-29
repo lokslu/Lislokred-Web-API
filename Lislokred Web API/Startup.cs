@@ -13,10 +13,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Lislokred_Web_API
@@ -42,7 +45,15 @@ namespace Lislokred_Web_API
 
             var authOptional = Configuration.GetSection("Auth").Get<AuthOption>();
                 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                //options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                //убирает при сериализации переобразование в camelCase
+                //оставляет свойства в ОРИГИНАЛЕ
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
+            });
+
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                    .AddJwtBearer(options =>
                    {
@@ -75,6 +86,9 @@ namespace Lislokred_Web_API
                     //.RequireClaim(User.Claims.FirstOrDefault(c => c.Type == "Id").Value)
                     .Build();
             });
+
+            services.AddCors();
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Lislokred_Web_API", Version = "v1" });
@@ -94,6 +108,8 @@ namespace Lislokred_Web_API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
             app.UseStaticFiles(new StaticFileOptions
             {

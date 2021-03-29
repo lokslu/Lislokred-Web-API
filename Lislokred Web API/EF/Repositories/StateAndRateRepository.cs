@@ -17,6 +17,34 @@ namespace Lislokred_Web_API.Models.Entitys
         {
             db = context;
         }
+
+        public IEnumerable<ReviewModel> GetReviews(Guid MovieId)
+        {
+            return  db.StateAndRate.Where(x => x.MovieId == MovieId && x.State == true && x.Rate > 0).Select(s => new ReviewModel()
+            {
+                IdUser = s.UserId,
+                Rate = (int)(s.Rate),
+                Nickname = db.Users.FirstOrDefault(d => d.Id == s.UserId).Nickname,
+                UrlImage = db.ImageUser.FirstOrDefault(d => d.UserId == s.UserId && d.IsMain == true).UrlData
+            }).ToList();
+
+        }
+
+        public bool ChangeRate(StateAndRate item)
+        {
+            var relation = db.StateAndRate.FirstOrDefault(x=>x.MovieId==item.MovieId&&x.UserId==item.UserId);
+            if (relation !=null)
+            {
+                relation.Rate = item.Rate;
+            db.Entry(relation).State = EntityState.Modified;
+            db.SaveChanges();
+            return true;
+            }
+            else
+            {
+            return false;
+            }
+        }
         public void Create(StateAndRate item)
         {
             db.StateAndRate.Add(item);

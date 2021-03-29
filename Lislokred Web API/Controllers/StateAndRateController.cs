@@ -12,6 +12,7 @@ namespace Lislokred_Web_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StateAndRateController : ControllerBase
     {
         private readonly StateAndRateRepository stateAndRateRepository;
@@ -24,9 +25,8 @@ namespace Lislokred_Web_API.Controllers
           изменение связи *
           подтягивание отзывов к фильму
          */
-        [Authorize]
         [HttpPost("AddReletion")]
-        public IActionResult AddMovieTouser([FromBody] StateAndRateModel reletion)
+        public IActionResult AddMovieToUser([FromBody] StateAndRateModel reletion)
         {
             var UserId = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == "Id").Value);
             var newRelation = new StateAndRate()
@@ -41,9 +41,8 @@ namespace Lislokred_Web_API.Controllers
             return Ok();
         }
 
-        [Authorize]
         [HttpDelete("RemoveReletion")]
-        public IActionResult Remove([FromBody] Guid MovieId)
+        public IActionResult Remove([FromQuery] Guid MovieId)
         {
             var UserId = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == "Id").Value);
 
@@ -57,7 +56,6 @@ namespace Lislokred_Web_API.Controllers
             }
         }
 
-        [Authorize]
         [HttpPut("UpdateReletion")]
         public IActionResult Update([FromBody] StateAndRateModel reletion)
         {
@@ -71,6 +69,37 @@ namespace Lislokred_Web_API.Controllers
             };
             stateAndRateRepository.Update(UpdateRelation);
             return Ok();
+        }
+
+        [HttpPut("ChangeRate")]
+        public IActionResult ChangeRate([FromBody] StateAndRateModel reletion)
+        {
+            var UserId = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+            var UpdateRelation = new StateAndRate()
+            {
+                UserId = UserId,
+                MovieId = reletion.MovieId,
+                State = reletion.State,
+                Rate = reletion.Rate
+            };
+            if (stateAndRateRepository.ChangeRate(UpdateRelation))
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("reviews/{MovieName}")]
+        public IActionResult GetReviews(string MovieName)
+        {
+            var UserId = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+            var Reviews= stateAndRateRepository.GetReviews(Guid.Parse(MovieName));
+
+            return Ok(Reviews);
+            
         }
     }
 }

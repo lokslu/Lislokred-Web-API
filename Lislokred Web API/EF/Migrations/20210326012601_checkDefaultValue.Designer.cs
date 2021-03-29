@@ -4,14 +4,16 @@ using Lislokred_Web_API.Models.Entitys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Lislokred_Web_API.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20210326012601_checkDefaultValue")]
+    partial class checkDefaultValue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,10 +88,13 @@ namespace Lislokred_Web_API.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValue(new Guid("03c5f660-babc-44ec-818a-9305c494f806"));
 
                     b.Property<bool>("IsMain")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -147,10 +152,15 @@ namespace Lislokred_Web_API.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("FilmingUnitId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FilmingUnitId");
 
                     b.ToTable("Movies");
                 });
@@ -184,7 +194,7 @@ namespace Lislokred_Web_API.Migrations
                     b.Property<string>("Role")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("Актёр");
+                        .HasDefaultValue("АктёH");
 
                     b.HasKey("MovieId", "FilmUnitId");
 
@@ -296,6 +306,13 @@ namespace Lislokred_Web_API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Lislokred_Web_API.Models.Entitys.Movie", b =>
+                {
+                    b.HasOne("Lislokred_Web_API.Models.Entitys.FilmingUnit", null)
+                        .WithMany("Movies")
+                        .HasForeignKey("FilmingUnitId");
+                });
+
             modelBuilder.Entity("Lislokred_Web_API.Models.Entitys.MovieToGenre", b =>
                 {
                     b.HasOne("Lislokred_Web_API.Models.Entitys.Genre", "Ganre")
@@ -375,6 +392,8 @@ namespace Lislokred_Web_API.Migrations
             modelBuilder.Entity("Lislokred_Web_API.Models.Entitys.FilmingUnit", b =>
                 {
                     b.Navigation("ImagesUnit");
+
+                    b.Navigation("Movies");
 
                     b.Navigation("Ratios");
                 });

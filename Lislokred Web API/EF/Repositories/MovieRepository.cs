@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Lislokred_Web_API.Models.Entitys
 {//Мынипуляцыи над Movies 
-    class MovieRepository 
+    class MovieRepository
     {
         private readonly ApplicationContext db;
 
@@ -39,15 +39,20 @@ namespace Lislokred_Web_API.Models.Entitys
             }
             foreach (var i in item.FilmUnit)
             {
-                newMovie.Ratios.Add(new Ratio { MovieId = newMovie.Id, FilmUnitId = i.Key, Role = i.Value,Movie= newMovie });
-               // newMovie.FilmСrew.Add(db.FilmingUnits.FirstOrDefault(x => x.Id == i.Key));//Работает
+                newMovie.Ratios.Add(new Ratio { MovieId = newMovie.Id, FilmUnitId = i.Key, Role = i.Value, Movie = newMovie });
+                // newMovie.FilmСrew.Add(db.FilmingUnits.FirstOrDefault(x => x.Id == i.Key));//Работает
 
             }
 
             db.SaveChanges();
         }
 
-      
+        public void Create(Movie item)
+        {
+            db.Movies.Add(item);
+            db.SaveChanges();
+        }
+
 
         public Movie FindById(Guid id)
         {
@@ -85,28 +90,166 @@ namespace Lislokred_Web_API.Models.Entitys
             db.SaveChanges();
             return true;
         }
-        public MovieModel GetMovieModelById(Guid MovieId, Guid UserId)
+        public IEnumerable<MovieModel> GetSeenMovie(Guid UserId)
         {
-            var movie=db.Movies.FirstOrDefault(x => x.Id == MovieId);
 
-            var MainImage = db.ImageMovies.FirstOrDefault(x => x.IsMain == true&& x.MovieId== MovieId);
+            var Relation = db.StateAndRate.Where(x => x.UserId == UserId && x.State == true);
 
-            var RateAndState = db.StateAndRate.FirstOrDefault(x=>x.MovieId== MovieId&&x.UserId==UserId);
-          //  var RateAndState2 = db.Movies.Include(c => c.StateAndRate.Where(v=>v.UserId==UserId)).FirstOrDefault(x => x.Id == MovieId).StateAndRate[0];
-            return new MovieModel()
+            //List<MovieModel> Movies2 = db.Movies.Where(x=>Relation.Any(y=>y.MovieId==x.Id))
+            //    .Select(v=> new MovieModel { 
+            //     Id=v.Id,
+            //    Name=v.Name,
+            //    Rate=v.});
+
+            IEnumerable<MovieModel> Movies = db.Movies.Join(Relation,
+                                    x => x.Id,
+                                    y => y.MovieId,
+                                    (x, y) => new MovieModel
+                                    {
+                                        Id = x.Id,
+                                        Name = x.Name,
+                                        Rate = y.Rate,
+                                        State = y.State,
+                                        UrlData = "Pictures/Movies/" + db.ImageMovies.FirstOrDefault(i => i.MovieId == x.Id && i.IsMain == true).UrlData
+                                    }); ;
+
+
+            return Movies;
+            //  var RateAndState2 = db.Movies.Include(c => c.StateAndRate.Where(v=>v.UserId==UserId)).FirstOrDefault(x => x.Id == MovieId).StateAndRate[0];
+        }
+        public IEnumerable<MovieModel> GetAllMovie(string UserId = null)
+        {
+
+
+            IEnumerable<MovieModel> movies = db.Movies.Select(x => new MovieModel()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                UrlData = "Pictures/Movies/" + db.ImageMovies.FirstOrDefault(i => i.MovieId == x.Id && i.IsMain == true).UrlData
+            }).ToList();
+
+            if (UserId != null)
+            {
+                DataForUser(UserId, ref movies);
+            }
+            return movies;
+        }
+
+        public IEnumerable<MovieModel> GetToBeSeenMovie(Guid UserId)
+        {
+            var Relation = db.StateAndRate.Where(x => x.UserId == UserId && x.State == false);
+
+
+            IEnumerable<MovieModel> Movies = db.Movies.Join(Relation,
+                                   x => x.Id,
+                                   y => y.MovieId,
+                                   (x, y) => new MovieModel
+                                   {
+                                       Id = x.Id,
+                                       Name = x.Name,
+                                       Rate = y.Rate,
+                                       State = y.State,
+                                       UrlData = "Pictures/Movies/" + db.ImageMovies.FirstOrDefault(i => i.MovieId == x.Id && i.IsMain == true).UrlData
+                                   }); ;
+
+
+            return Movies;
+        }
+
+
+        public MovieModel GetMovieModelById(Guid MovieId, string UserId = null)
+        {
+
+            var movie = db.Movies.FirstOrDefault(x => x.Id == MovieId);
+            if (movie == null)
+            {
+                return null;
+            }
+
+            var MainImage = db.ImageMovies.FirstOrDefault(x => x.IsMain == true && x.MovieId == MovieId);
+
+            MovieModel result = new MovieModel()
             {
                 Id = movie.Id,
                 Name = movie.Name,
-                UrlData = MainImage.UrlData,
-                State = RateAndState.State,
-                Rate = RateAndState?.Rate,
+                UrlData = "Pictures/Movies/" + MainImage.UrlData
+
             };
+            if (UserId != null)
+            {
+                var RateAndState = db.StateAndRate.FirstOrDefault(x => x.MovieId == MovieId && x.UserId == Guid.Parse(UserId));
+                result.State = RateAndState?.State;
+                result.Rate = RateAndState?.Rate;
+            }
+            return result;
+            //  var RateAndState2 = db.Movies.Include(c => c.StateAndRate.Where(v=>v.UserId==UserId)).FirstOrDefault(x => x.Id == MovieId).StateAndRate[0];
+        }
+        public MovieFullInformationModel GetMovieFullinfModelById(Guid MovieId, string UserId = null)
+        {
+
+            var movie = db.Movies.FirstOrDefault(x => x.Id == MovieId);
+            if (movie == null)
+            {
+                return null;
+            }
+
+            var MainImage = db.ImageMovies.FirstOrDefault(x => x.IsMain == true && x.MovieId == MovieId);
+
+
+            MovieFullInformationModel result = new MovieFullInformationModel()
+            {
+                Id = movie.Id,
+                Name = movie.Name,
+                Description = movie.Description,
+                UrlData = "Pictures/Movies/" + MainImage.UrlData
+
+            };
+
+            result.Genres = db.MovieToGenre.Where(x => x.MovieId == MovieId).Select(s => new GenreModel()
+            {
+                Id = s.GanreId,
+                Data = db.Genres.FirstOrDefault(g => g.Id == s.GanreId).Data
+            });
+
+            if (UserId != null)
+            {
+                var RateAndState = db.StateAndRate.FirstOrDefault(x => x.MovieId == MovieId && x.UserId == Guid.Parse(UserId));
+                result.State = RateAndState?.State;
+                result.Rate = RateAndState?.Rate;
+            }
+            return result;
+            //  var RateAndState2 = db.Movies.Include(c => c.StateAndRate.Where(v=>v.UserId==UserId)).FirstOrDefault(x => x.Id == MovieId).StateAndRate[0];
+        }
+        public IEnumerable<MovieModel> Serch(string MovieName, string UserId = null)
+        {
+            IEnumerable<MovieModel> movies = db.Movies.Where(x => x.Name.Contains(MovieName)).Select(s => new MovieModel()
+            {
+                Id = s.Id,
+                Name = s.Name,
+                UrlData = "Pictures/Movies/" + db.ImageMovies.FirstOrDefault(i => i.MovieId == s.Id && i.IsMain == true).UrlData
+            }).ToList();
+            if (UserId != null)
+            {
+                DataForUser(UserId, ref movies);
+            }
+            return movies;
         }
 
-        public void Create(Movie item)
+
+        private void DataForUser(string UserId, ref IEnumerable<MovieModel> movies)
         {
-            db.Movies.Add(item);
-            db.SaveChanges();
+            var StateAndRate = db.StateAndRate.Where(x => x.UserId == Guid.Parse(UserId));
+            movies = movies.Select(x => new MovieModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                UrlData = x.UrlData,
+                State = StateAndRate.FirstOrDefault(w => w.MovieId == x.Id && w.UserId == Guid.Parse(UserId))?.State,
+                Rate = StateAndRate.FirstOrDefault(w => w.MovieId == x.Id && w.UserId == Guid.Parse(UserId))?.Rate
+
+            });
+
+
         }
     }
-}   
+}

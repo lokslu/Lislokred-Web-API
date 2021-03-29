@@ -6,16 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Lislokred_Web_API.Controllers
 {
-   
+
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -26,13 +28,13 @@ namespace Lislokred_Web_API.Controllers
 
         public UserController(ApplicationContext context, IOptions<AuthOption> authOptions)
         {
-            userRepository= new UserRepository(context);
+            userRepository = new UserRepository(context);
             this.authOption = authOptions;
 
         }
         [HttpPost("register")]
         [AllowAnonymous]
-        public async void Register([FromBody] RegisterModel model)
+        public IActionResult Register([FromBody] RegisterModel model)
         {
 
             //переобразование из модели(RegisterModel) в сущьность(User)
@@ -42,28 +44,38 @@ namespace Lislokred_Web_API.Controllers
                 Email = model.Email,
                 Password = model.Password,
                 Nickname = model.Nickname,
-                Gender=model.Gender
             };
+            if (model.Gender.HasValue)
+                user.Gender = model.Gender.Value ? "M" : "W";
             foreach (var i in model.FavoriteGenres)
             {
-                user.UserToGenre.Add(new UserToGenre{UserId=user.Id,GanreId=i.Id});
+                user.UserToGenre.Add(new UserToGenre { UserId = user.Id, GanreId = i.Id });
             }
 
 
 
-            if (userRepository.OriginalityCheckNickname(user.Nickname, user.Email))
+            if (userRepository.OriginalityCheckNicknameAndEmail(user.Nickname, user.Email))
             {
-                this.userRepository.Create(user);
-                 Ok();
+                userRepository.Create(user);
+                // Ok();
+                return this.Login(new LoginModel() { Email = user.Email, Password = user.Password });
             }
             else
             {
-                Response.StatusCode = 400;
-                await Response.WriteAsync("User with this Nickname already exists.");
+                //Response.StatusCode = 400;
+                //Response.WriteAsync("User with this Nickname already exists.");
+
+                return BadRequest("User with this Nickname already exists.");
             }
         }
-
-
+        //[SwaggerResponse((int)HttpStatusCode.OK, "", typeof())]
+        [HttpPost("cheknickname")]
+        [AllowAnonymous]
+        public IActionResult CheckNewNickname([FromBody] String newNick)
+        {
+            bool state = userRepository.OriginalityCheckNickname(newNick);
+            return Ok(new { original = state });
+        }
         [HttpPost("login")]
         [AllowAnonymous]
         public IActionResult Login([FromBody] LoginModel model)
@@ -87,20 +99,20 @@ namespace Lislokred_Web_API.Controllers
                     claims: identity.Claims,
                     expires: now.Add(TimeSpan.FromMinutes(authOptions.TokenLifetime)),
                     signingCredentials: new SigningCredentials(authOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-            
+
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
 
             // сериализация ответа
             Response.ContentType = "application/json";
             Console.WriteLine("Login succeed");
-            return Ok(new { token = encodedJwt /*, Username = response.username*/ });
+            return Ok(new { token = encodedJwt });
         }
 
         private ClaimsIdentity GetIdentity(string email, string password)// тип ClaimsIdentity
         {
             var user = userRepository.AuthenticateUser(email, password);
-            if(user!=null)
+            if (user != null)
             {
                 var claims = new List<Claim>
                 {

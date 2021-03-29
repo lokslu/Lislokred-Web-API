@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lislokred_Web_API.Models.Entitys
 {//Мынипуляцыи над users 
@@ -56,9 +57,15 @@ namespace Lislokred_Web_API.Models.Entitys
             db.SaveChanges();
             return true;
         }
-        public bool OriginalityCheckNickname(string Nickname,string Email)
+        public bool OriginalityCheckNicknameAndEmail(string Nickname,string Email)
         {
-            return !db.Users.Any(x => x.Nickname == Nickname||x.Email==Email);
+
+            return!db.Users.Any(x => x.Nickname == Nickname||x.Email==Email);
+        }       
+        public bool OriginalityCheckNickname(string Nickname)
+        {
+
+            return!db.Users.Any(x => x.Nickname == Nickname);
         }
         public User AuthenticateUser(string email, string password)
         {

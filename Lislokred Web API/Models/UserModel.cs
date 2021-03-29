@@ -8,7 +8,8 @@ namespace Lislokred_Web_API.Models
         public string Nickname { get; set; }
         public string Email { get; set; }
         public string Gender { get; set; }
-
-        public List<GenreModel> FavoriteGenres { get; set; }
+        
+        //не нужно подтягиваеться отдельным запросом
+        //public List<GenreModel> FavoriteGenres { get; set; }
     }
 }
