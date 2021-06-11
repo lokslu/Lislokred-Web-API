@@ -10,6 +10,9 @@ namespace Lislokred_Web_API.Models.Entitys
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public string ImdbId{ get; set; }
+        public double ImdbAverageRating { get; set; }
+        public int ImdbNumVotes { get; set; }
 
         public List<Ratio> Ratios { get; set; } = new List<Ratio>();
 

@@ -4,14 +4,16 @@ using Lislokred_Web_API.Models.Entitys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Lislokred_Web_API.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20210526140338_Add_UnitImdbId")]
+    partial class Add_UnitImdbId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,14 +152,8 @@ namespace Lislokred_Web_API.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("ImdbAverageRating")
-                        .HasColumnType("float");
-
                     b.Property<string>("ImdbId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("ImdbNumVotes")
-                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -200,22 +196,10 @@ namespace Lislokred_Web_API.Migrations
                     b.Property<Guid>("FilmUnitId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("MovieImdbId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Orderig")
-                        .HasColumnType("int");
-
                     b.Property<string>("Role")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)")
                         .HasDefaultValue("Актёр");
-
-                    b.Property<string>("UnitImdbId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Сharacter")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("MovieId", "FilmUnitId");
 
