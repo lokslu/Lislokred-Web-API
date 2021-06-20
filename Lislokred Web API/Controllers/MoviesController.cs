@@ -22,9 +22,9 @@ namespace Lislokred_Web_API.Controllers
         private readonly MovieRepository movieRepository;
 
 
-        public MoviesController(ApplicationContext context)
+        public MoviesController(ApplicationContext context,Environment config)
         {
-            movieRepository = new MovieRepository(context);
+            movieRepository = new MovieRepository(context,config.ApplicationUrl[0]);
 
         }
 

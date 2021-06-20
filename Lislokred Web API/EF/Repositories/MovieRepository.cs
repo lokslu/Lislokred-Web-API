@@ -8,10 +8,22 @@ namespace Lislokred_Web_API.Models.Entitys
     class MovieRepository
     {
         private readonly ApplicationContext db;
+        private readonly string domen;
+        private readonly string pathToMovie="Pictures/Movies/";
 
-        public MovieRepository(ApplicationContext context)
+        public MovieRepository(ApplicationContext context, string domen)
         {
             this.db = context;
+            this.domen = domen;
+        }
+
+        private static string GetUrlImageOnTypeSource(ImageMovie image, string domen, string path)
+        {
+            if (image.IsAnotherSource)
+            {
+                return image.UrlData;
+            }
+            return domen + "/" + path + image.UrlData;
         }
         public void Create(MovieCreateModel item)
         {
@@ -110,8 +122,10 @@ namespace Lislokred_Web_API.Models.Entitys
                                         Name = x.Name,
                                         Rate = y.Rate,
                                         State = y.State,
-                                        UrlData = "Pictures/Movies/" + db.ImageMovies.FirstOrDefault(i => i.MovieId == x.Id && i.IsMain == true).UrlData
-                                    }); ;
+                                        UrlData = GetUrlImageOnTypeSource(db.ImageMovies.FirstOrDefault(i => i.MovieId == x.Id && i.IsMain == true),
+                                                  this.domen,
+                                                  this.pathToMovie)
+                                    });
 
 
             return Movies;
@@ -125,7 +139,9 @@ namespace Lislokred_Web_API.Models.Entitys
             {
                 Id = x.Id,
                 Name = x.Name,
-                UrlData = "Pictures/Movies/" + db.ImageMovies.FirstOrDefault(i => i.MovieId == x.Id && i.IsMain == true).UrlData
+                UrlData = GetUrlImageOnTypeSource(db.ImageMovies.FirstOrDefault(i => i.MovieId == x.Id && i.IsMain == true),
+                                                  this.domen,
+                                                  this.pathToMovie)
             }).ToList();
 
             if (UserId != null)
@@ -134,7 +150,7 @@ namespace Lislokred_Web_API.Models.Entitys
             }
             return movies;
         }
-
+       
         public IEnumerable<MovieModel> GetToBeSeenMovie(Guid UserId)
         {
             var Relation = db.StateAndRate.Where(x => x.UserId == UserId && x.State == false);
@@ -143,14 +159,17 @@ namespace Lislokred_Web_API.Models.Entitys
             IEnumerable<MovieModel> Movies = db.Movies.Join(Relation,
                                    x => x.Id,
                                    y => y.MovieId,
-                                   (x, y) => new MovieModel
-                                   {
-                                       Id = x.Id,
-                                       Name = x.Name,
-                                       Rate = y.Rate,
-                                       State = y.State,
-                                       UrlData = "Pictures/Movies/" + db.ImageMovies.FirstOrDefault(i => i.MovieId == x.Id && i.IsMain == true).UrlData
-                                   }); ;
+                                   (x, y) =>
+                                      new MovieModel
+                                      {
+                                          Id = x.Id,
+                                          Name = x.Name,
+                                          Rate = y.Rate,
+                                          State = y.State,
+                                          UrlData = GetUrlImageOnTypeSource(db.ImageMovies.FirstOrDefault(i => i.MovieId == x.Id && i.IsMain == true),
+                                                                            this.domen,
+                                                                            this.pathToMovie)
+                                      }).ToList();
 
 
             return Movies;
@@ -166,13 +185,14 @@ namespace Lislokred_Web_API.Models.Entitys
                 return null;
             }
 
-            var MainImage = db.ImageMovies.FirstOrDefault(x => x.IsMain == true && x.MovieId == MovieId);
 
             MovieModel result = new MovieModel()
             {
                 Id = movie.Id,
                 Name = movie.Name,
-                UrlData = "Pictures/Movies/" + MainImage.UrlData
+                UrlData = GetUrlImageOnTypeSource(db.ImageMovies.FirstOrDefault(i => i.MovieId == movie.Id && i.IsMain == true),
+                                                            this.domen,
+                                                            this.pathToMovie)
 
             };
             if (UserId != null)
@@ -193,15 +213,15 @@ namespace Lislokred_Web_API.Models.Entitys
                 return null;
             }
 
-            var MainImage = db.ImageMovies.FirstOrDefault(x => x.IsMain == true && x.MovieId == MovieId);
-
 
             MovieFullInformationModel result = new MovieFullInformationModel()
             {
                 Id = movie.Id,
                 Name = movie.Name,
                 Description = movie.Description,
-                UrlData = "Pictures/Movies/" + MainImage.UrlData
+                UrlData = GetUrlImageOnTypeSource(db.ImageMovies.FirstOrDefault(i => i.MovieId == movie.Id && i.IsMain == true),
+                                                            this.domen,
+                                                            this.pathToMovie)
 
             };
 
@@ -226,7 +246,9 @@ namespace Lislokred_Web_API.Models.Entitys
             {
                 Id = s.Id,
                 Name = s.Name,
-                UrlData = "Pictures/Movies/" + db.ImageMovies.FirstOrDefault(i => i.MovieId == s.Id && i.IsMain == true).UrlData
+                UrlData = GetUrlImageOnTypeSource(db.ImageMovies.FirstOrDefault(i => i.MovieId == s.Id && i.IsMain == true),
+                                                            this.domen,
+                                                            this.pathToMovie)
             }).ToList();
             if (UserId != null)
             {
@@ -243,7 +265,9 @@ namespace Lislokred_Web_API.Models.Entitys
             {
                 Id = x.Id,
                 Name = x.Name,
-                UrlData = x.UrlData,
+                UrlData = GetUrlImageOnTypeSource(db.ImageMovies.FirstOrDefault(i => i.MovieId == x.Id && i.IsMain == true),
+                                                            this.domen,
+                                                            this.pathToMovie),
                 State = StateAndRate.FirstOrDefault(w => w.MovieId == x.Id && w.UserId == Guid.Parse(UserId))?.State,
                 Rate = StateAndRate.FirstOrDefault(w => w.MovieId == x.Id && w.UserId == Guid.Parse(UserId))?.Rate
 

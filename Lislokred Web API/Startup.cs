@@ -24,6 +24,11 @@ using System.Threading.Tasks;
 
 namespace Lislokred_Web_API
 {
+
+    public class Environment
+    {
+        public IList<string> ApplicationUrl { get; set; }
+    }
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -36,6 +41,10 @@ namespace Lislokred_Web_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            var config = new Environment();
+            config.ApplicationUrl = Configuration["ASPNETCORE_URLS"].Split(";");
+            services.AddSingleton(config);
 
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));

@@ -13,6 +13,8 @@ namespace Lislokred_Web_API.Models.Entitys
         public string UrlData { get; set; }
         public bool IsMain { get; set; }
 
+        public bool IsAnotherSource { get; set; }
+
         public Movie Movie { get; set; }
         public Guid MovieId { get; set; }
     }
@@ -23,6 +25,7 @@ namespace Lislokred_Web_API.Models.Entitys
         public string Name { get; set; }
         public string UrlData { get; set; }
         public bool IsMain { get; set; }
+        public bool IsAnotherSource { get; set; }
 
         public User User { get; set; }
         public Guid UserId { get; set; }    
@@ -36,6 +39,7 @@ namespace Lislokred_Web_API.Models.Entitys
         public string Name { get; set; }
         public string UrlData { get; set; }
         public bool IsMain { get; set; }
+        public bool IsAnotherSource { get; set; }
 
         public FilmingUnit Unit { get; set; }
         public Guid UnitId { get; set; }

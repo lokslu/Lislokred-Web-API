@@ -4,11 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Lislokred_Web_API.Models.Entitys
-{//Мынипуляцыи над Movies 
- //1. поиск по id или по Email
- //2. создание или добавление
- //3. удаление по id или по Email
- //4. изменение
+{
 
     class StateAndRateRepository
     {
