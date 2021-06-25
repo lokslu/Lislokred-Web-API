@@ -65,7 +65,7 @@ namespace Lislokred_Web_API.Controllers
                 //Response.StatusCode = 400;
                 //Response.WriteAsync("User with this Nickname already exists.");
 
-                return BadRequest("User with this Nickname already exists.");
+                return BadRequest("User with this Emailalready exists.");
             }
         }
         //[SwaggerResponse((int)HttpStatusCode.OK, "", typeof())]

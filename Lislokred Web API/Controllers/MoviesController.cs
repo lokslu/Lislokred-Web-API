@@ -24,7 +24,7 @@ namespace Lislokred_Web_API.Controllers
 
         public MoviesController(ApplicationContext context,Environment config)
         {
-            movieRepository = new MovieRepository(context,config.ApplicationUrl[0]);
+            movieRepository = new MovieRepository(context,config.ApplicationUrl);
 
         }
 

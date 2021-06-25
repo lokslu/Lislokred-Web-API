@@ -10,8 +10,8 @@ namespace Lislokred_Web_API
         public string Secret { get; set; }    // ключ для шифрации
         public int TokenLifetime { get; set; } // время жизни токена в секундах
         public SymmetricSecurityKey GetSymmetricSecurityKey()
-        {
+        { 
             return new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
-        }
-    }
+        } 
+    }  
 }

@@ -15,15 +15,17 @@ namespace Lislokred_Web_API.Controllers
 
     public class FilmingUnitController : ControllerBase
     {
+        private readonly Environment config;
         private readonly FilmingUnitRepository filmingUnitRepository;
-        public FilmingUnitController(ApplicationContext context)
+        public FilmingUnitController(ApplicationContext context, Environment config)
         {
             filmingUnitRepository = new FilmingUnitRepository(context);
+            this.config = config;
         }
         [HttpGet("{MovieId}")]
         public IActionResult GetUnitsByMovieId(string MovieId)
         {
-            var units = filmingUnitRepository.GetByMovieId(Guid.Parse(MovieId));
+            var units = filmingUnitRepository.GetByMovieId(Guid.Parse(MovieId),config.ApplicationUrl).ToList();
                 return Ok(units);
         }
     }

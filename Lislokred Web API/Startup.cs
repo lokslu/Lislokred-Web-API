@@ -27,7 +27,7 @@ namespace Lislokred_Web_API
 
     public class Environment
     {
-        public IList<string> ApplicationUrl { get; set; }
+        public string ApplicationUrl { get; set; }
     }
     public class Startup
     {
@@ -43,7 +43,7 @@ namespace Lislokred_Web_API
         {
 
             var config = new Environment();
-            config.ApplicationUrl = Configuration["ASPNETCORE_URLS"].Split(";");
+            config.ApplicationUrl=Configuration["domen"];
             services.AddSingleton(config);
 
             services.AddDbContext<ApplicationContext>(options =>

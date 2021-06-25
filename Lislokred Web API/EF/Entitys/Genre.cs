@@ -14,3 +14,4 @@ namespace Lislokred_Web_API.Models.Entitys
         public List<MovieToGenre> MovieToGenre { get; set; } = new List<MovieToGenre>();
     }
 }
+ 
