@@ -7,19 +7,22 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace Lislokred_Web_API.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20210513213426_Add_ImdbId")]
-    partial class Add_ImdbId
+    [Migration("20220322153109_Add_base_genres")]
+    partial class Add_base_genres
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.3")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.3")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("Lislokred_Web_API.Models.Entitys.FilmingUnit", b =>
                 {
@@ -36,6 +39,9 @@ namespace Lislokred_Web_API.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UnitImdbId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("FilmingUnits");
@@ -45,8 +51,9 @@ namespace Lislokred_Web_API.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Data")
                         .HasColumnType("nvarchar(max)");
@@ -54,6 +61,28 @@ namespace Lislokred_Web_API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genres");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Data = "Detective"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Data = "Drama"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Data = "Сomedy"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Data = "Fantastic"
+                        });
                 });
 
             modelBuilder.Entity("Lislokred_Web_API.Models.Entitys.ImageMovie", b =>
@@ -61,6 +90,9 @@ namespace Lislokred_Web_API.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsAnotherSource")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsMain")
                         .HasColumnType("bit");
@@ -90,6 +122,9 @@ namespace Lislokred_Web_API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsAnotherSource")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsMain")
                         .HasColumnType("bit");
 
@@ -117,6 +152,9 @@ namespace Lislokred_Web_API.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsAnotherSource")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsMain")
                         .HasColumnType("bit");
@@ -149,8 +187,14 @@ namespace Lislokred_Web_API.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("ImdbAverageRating")
+                        .HasColumnType("float");
+
                     b.Property<string>("ImdbId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ImdbNumVotes")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -193,10 +237,22 @@ namespace Lislokred_Web_API.Migrations
                     b.Property<Guid>("FilmUnitId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("MovieImdbId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Orderig")
+                        .HasColumnType("int");
+
                     b.Property<string>("Role")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)")
                         .HasDefaultValue("Актёр");
+
+                    b.Property<string>("UnitImdbId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Сharacter")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("MovieId", "FilmUnitId");
 

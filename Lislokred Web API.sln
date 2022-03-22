@@ -8,8 +8,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lislokred Web API", "Lislok
 		{D1A16B80-2982-47B1-8918-A97213BCAB87} = {D1A16B80-2982-47B1-8918-A97213BCAB87}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaMeneger", "MediaMeneger\MediaMeneger.csproj", "{D1A16B80-2982-47B1-8918-A97213BCAB87}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,10 +18,6 @@ Global
 		{A54597CA-6378-4B82-A35F-451F0D76B047}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A54597CA-6378-4B82-A35F-451F0D76B047}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A54597CA-6378-4B82-A35F-451F0D76B047}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D1A16B80-2982-47B1-8918-A97213BCAB87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D1A16B80-2982-47B1-8918-A97213BCAB87}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D1A16B80-2982-47B1-8918-A97213BCAB87}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D1A16B80-2982-47B1-8918-A97213BCAB87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

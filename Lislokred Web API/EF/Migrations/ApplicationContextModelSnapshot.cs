@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace Lislokred_Web_API.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
@@ -15,9 +17,10 @@ namespace Lislokred_Web_API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.3")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.3")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("Lislokred_Web_API.Models.Entitys.FilmingUnit", b =>
                 {
@@ -46,8 +49,9 @@ namespace Lislokred_Web_API.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Data")
                         .HasColumnType("nvarchar(max)");
@@ -55,6 +59,28 @@ namespace Lislokred_Web_API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genres");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Data = "Detective"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Data = "Drama"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Data = "Сomedy"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Data = "Fantastic"
+                        });
                 });
 
             modelBuilder.Entity("Lislokred_Web_API.Models.Entitys.ImageMovie", b =>
